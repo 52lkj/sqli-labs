@@ -15,7 +15,7 @@ learning SQL Injection Techniques
 2、安装Sqli-labs:  
 `git clone https://hub.fastgit.org/mukkul007/sqli-labs-kali2.git`
 3、配置文件
-'''cd sqli-labs/
+`cd sqli-labs/
 cd sql-connections/
-vi db-creds.inc'''
+vi db-creds.inc`
 
