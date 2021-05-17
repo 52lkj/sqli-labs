@@ -11,11 +11,11 @@ learning SQL Injection Techniques
 设置密码  
 `SET PASSWORD FOR 'root'@'localhost' = PASSWORD('新的密码')`  
 切换网站目录  
-`cd /var/www`  
-创建index  
-`touch index.php`  
-` vim index.php`  
-`<?php phpinfo();?>`
+`cd /var/www/html`  
 2、安装Sqli-labs:  
-`git clone https://github.com/himadriganguly/sqlilabs.git`
+`git clone https://hub.fastgit.org/mukkul007/sqli-labs-kali2.git`
+3、配置文件
+'''cd sqli-labs/
+cd sql-connections/
+vi db-creds.inc'''
 
